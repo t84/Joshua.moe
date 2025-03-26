@@ -36,22 +36,25 @@ function restoreMusicSection(spotify, shouldRestartMarquee) {
 
   let musicInfo = document.querySelector(".music-info");
 
-  if (!musicInfo) {
+  const ALBUMART = spotify.album_art_url ? spotify.album_art_url : "music.png";
+
+  if (!musicInfo && spotify) {
     musicDiv.innerHTML = `
       <h2>Music</h2>
       <div class="music-container">
-        <img src="${spotify.album_art_url}" alt="Album Art" class="album-art" draggable=False>
+        <img src="${ALBUMART}" alt="Album Art" class="album-art" draggable="false">
         <div class="music-info">
           <div class="marquee">
-            <span class="song-title">${spotify.song} - ${spotify.artist}</span>
+            <span class="song-title">${spotify.song || "Unknown Song"} - ${spotify.artist || "Unknown Artist"}</span>
           </div>
           <div class="marquee">
-            <span class="album">${spotify.album}</span>
+            <span class="album">${spotify.album || "Unknown Album"}</span>
           </div>
-          <p class="timestamps">${formatTime(elapsedTime)} / ${formatTime(songDuration)}</p>
+          <p class="timestamps">${formatTime(elapsedTime || 0)} / ${formatTime(songDuration || 0)}</p>
         </div>
       </div>
     `;
+  
     musicInfo = document.querySelector(".music-info");
   }
 
@@ -65,7 +68,7 @@ function restoreMusicSection(spotify, shouldRestartMarquee) {
   timestamps.innerText = `${formatTime(elapsedTime)} / ${formatTime(songDuration)}`;
 
   if (albumArt && albumArt.src !== spotify.album_art_url) {
-    albumArt.src = spotify.album_art_url;
+    albumArt.src = ALBUMART;
   }
 
   if (shouldRestartMarquee && !songTitle.style.animation) {
@@ -163,8 +166,6 @@ function updateStatusIndicator(status) {
     }
 }
 function fetchRSSFeed(rssUrl, targetElement) {
-    console.log("Fetching RSS from:", rssUrl); 
-  
     fetch(rssUrl)
       .then(response => {
         console.log("Response status:", response.status); 
@@ -174,9 +175,7 @@ function fetchRSSFeed(rssUrl, targetElement) {
         return response.text();
       })
       .then(str => {
-        console.log("XML String (first 200 chars):", str.substring(0, 200)); 
         const xmlDoc = new window.DOMParser().parseFromString(str, "text/xml");
-        console.log("Parsed XML:", xmlDoc); 
   
         const errorNode = xmlDoc.querySelector("parsererror"); 
         if (errorNode) {
