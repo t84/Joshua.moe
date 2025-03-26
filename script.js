@@ -71,7 +71,11 @@ function restoreMusicSection(spotify, shouldRestartMarquee) {
 
   const interval = setInterval(() => {
     updateProgress(songStart, songEnd);
+    if (Date.now() >= songEnd) {
+      clearInterval(interval);
+    }
   }, 1000);
+
   musicDiv.dataset.interval = interval;
 }
 
@@ -109,6 +113,7 @@ function isSameSpotify(newSpotify, savedSpotify) {
          newSpotify.timestamps.start === savedSpotify.timestamps.start &&
          newSpotify.timestamps.end === savedSpotify.timestamps.end;
 }
+
 
 async function fetchDiscordStatus() {
     try {
