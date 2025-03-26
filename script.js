@@ -1,9 +1,130 @@
 const discordUserId = '442142462857707520';
 
+function updateMusicSection(spotify) {
+  const musicDiv = document.querySelector(".music");
+
+  if (!spotify) {
+    musicDiv.innerHTML = `
+      <h2>Music</h2>
+      <p>Not listening to anything right now.</p>
+    `;
+    localStorage.removeItem("currentSpotify");
+    return;
+  }
+
+  const savedSpotify = JSON.parse(localStorage.getItem("currentSpotify"));
+
+  if (savedSpotify && !isSameSpotify(spotify, savedSpotify)) {
+    localStorage.setItem("currentSpotify", JSON.stringify(spotify));
+    restoreMusicSection(spotify, true);
+  } else if (!savedSpotify && spotify) {
+    localStorage.setItem("currentSpotify", JSON.stringify(spotify));
+    restoreMusicSection(spotify, true);
+  } else {
+    restoreMusicSection(savedSpotify, false);
+  }
+}
+
+function restoreMusicSection(spotify, shouldRestartMarquee) {
+  const musicDiv = document.querySelector(".music");
+
+  const currentTime = Date.now();
+  const songStart = spotify.timestamps.start;
+  const songEnd = spotify.timestamps.end;
+  const songDuration = songEnd - songStart;
+  const elapsedTime = Math.max(0, currentTime - songStart);
+
+  let musicInfo = document.querySelector(".music-info");
+
+  if (!musicInfo) {
+    musicDiv.innerHTML = `
+      <h2>Music</h2>
+      <div class="music-container">
+        <img src="${spotify.album_art_url}" alt="Album Art" class="album-art" draggable=False>
+        <div class="music-info">
+          <div class="marquee"><span class="song-title"></span></div>
+          <div class="marquee"><span class="album"></span></div>
+          <p class="timestamps"></p>
+        </div>
+      </div>
+    `;
+    musicInfo = document.querySelector(".music-info");
+  }
+
+  document.querySelector(".song-title").innerHTML = `<strong>${spotify.song}</strong> - ${spotify.artist}`;
+  document.querySelector(".album").innerHTML = `<em>${spotify.album}</em>`;
+  document.querySelector(".timestamps").innerText = `${formatTime(elapsedTime)} / ${formatTime(songDuration)}`;
+
+  const albumArt = document.querySelector(".album-art");
+  if (albumArt && albumArt.src !== spotify.album_art_url) {
+    albumArt.src = spotify.album_art_url;
+  }
+
+  if (shouldRestartMarquee) {
+    restartMarquee(document.querySelector(".song-title"));
+    restartMarquee(document.querySelector(".album"));
+  }
+
+  if (musicDiv.dataset.interval) {
+    clearInterval(musicDiv.dataset.interval);
+  }
+
+  const interval = setInterval(() => {
+    updateProgress(songStart, songEnd);
+  }, 1000);
+  musicDiv.dataset.interval = interval;
+}
+
+function restartMarquee(element) {
+  element.style.animation = "none";
+  setTimeout(() => {
+    element.style.animation = "marquee 8s linear infinite";
+  }, 100);
+}
+
+function formatTime(ms) {
+  const totalSeconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+}
+
+function updateProgress(songStart, songEnd) {
+  const currentTime = Date.now();
+  const elapsedTime = Math.max(0, currentTime - songStart);
+  const songDuration = songEnd - songStart;
+
+  const timestamps = document.querySelector(".timestamps");
+  if (timestamps) {
+    timestamps.innerText = `${formatTime(elapsedTime)} / ${formatTime(songDuration)}`;
+  }
+}
+
+function isSameSpotify(newSpotify, savedSpotify) {
+  if (!newSpotify || !savedSpotify) return false;
+
+  return newSpotify.song === savedSpotify.song &&
+         newSpotify.artist === savedSpotify.artist &&
+         newSpotify.album === savedSpotify.album &&
+         newSpotify.timestamps.start === savedSpotify.timestamps.start &&
+         newSpotify.timestamps.end === savedSpotify.timestamps.end;
+}
+
 async function fetchDiscordStatus() {
     try {
         const response = await fetch(`https://api.lanyard.rest/v1/users/${discordUserId}`);
         const data = await response.json();
+
+        const spotifyActivity = data.data.activities.find(activity => activity.name === "Spotify");
+
+
+        if (spotifyActivity) {
+          console.log("I am listening to music!");
+          updateMusicSection(data.data.spotify);
+        } else {
+          console.log("I am not listening to music!");
+          updateMusicSection(null);
+        }
 
         if (data.success) {
             const status = data.data.discord_status;
@@ -122,7 +243,7 @@ function fetchRSSFeed(rssUrl, targetElement) {
       return `${paddedTodayMonth}-${paddedTodayDay}-${todayYear}`;
     }
   }
-  const rssFeedUrl = "https://corsproxy.io/?url=https://orbiva.bearblog.dev/rss/"; 
+  const rssFeedUrl = "https://cors.joshua.moe/?url=https://orbiva.bearblog.dev/rss/"; 
   const targetElementSelector = ".writing-list";
   
   fetchRSSFeed(rssFeedUrl, targetElementSelector);
@@ -167,7 +288,7 @@ setInterval(updateAge, 50);
 
 updateAge();
 
-setInterval(fetchDiscordStatus, 5000);
+setInterval(fetchDiscordStatus, 3000);
 
 fetchDiscordStatus();
 
