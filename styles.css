@@ -217,42 +217,42 @@ h2 a:hover {
 }
 
 .marquee {
-    width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    position: relative;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  position: relative;
 }
-
+  
 .marquee span {
-    display: inline-block;
-    padding-left: 100%;
-    animation: marquee 8s linear infinite;
+  display: inline-block;
+  padding-left: 100%;
+  animation: marquee 8s linear infinite;
 }
-
+  
 @keyframes marquee {
-    from {
-        transform: translateX(0%);
-    }
-    to {
-        transform: translateX(-100%);
-    }
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
 }
-
+  
 .song-title {
-    color: #fff;
-    font-size: 1rem;
-    font-weight: bold;
-    margin-bottom: 5px;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 5px;
 }
-
+  
 .album {
-    color: #aaa;
-    font-size: 0.9rem;
-    font-style: italic;
+  color: #aaa;
+  font-size: 0.9rem;
+  font-style: italic;
 }
-
+  
 .timestamps {
-    color: #bbb;
-    font-size: 0.8rem;
-    margin-top: 5px;
+  color: #bbb;
+  font-size: 0.8rem;
+  margin-top: 5px;
 }

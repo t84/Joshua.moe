@@ -14,7 +14,7 @@ function updateMusicSection(spotify) {
 
   const savedSpotify = JSON.parse(localStorage.getItem("currentSpotify"));
 
-  if (savedSpotify && !isSameSpotify(spotify, savedSpotify)) {
+  if (!isSameSpotify(spotify, savedSpotify)) {
     localStorage.setItem("currentSpotify", JSON.stringify(spotify));
     restoreMusicSection(spotify, true);
   } else if (!savedSpotify && spotify) {
@@ -42,27 +42,35 @@ function restoreMusicSection(spotify, shouldRestartMarquee) {
       <div class="music-container">
         <img src="${spotify.album_art_url}" alt="Album Art" class="album-art" draggable=False>
         <div class="music-info">
-          <div class="marquee"><span class="song-title"></span></div>
-          <div class="marquee"><span class="album"></span></div>
-          <p class="timestamps"></p>
+          <div class="marquee">
+            <span class="song-title">${spotify.song} - ${spotify.artist}</span>
+          </div>
+          <div class="marquee">
+            <span class="album">${spotify.album}</span>
+          </div>
+          <p class="timestamps">${formatTime(elapsedTime)} / ${formatTime(songDuration)}</p>
         </div>
       </div>
     `;
     musicInfo = document.querySelector(".music-info");
   }
 
-  document.querySelector(".song-title").innerHTML = `<strong>${spotify.song}</strong> - ${spotify.artist}`;
-  document.querySelector(".album").innerHTML = `<em>${spotify.album}</em>`;
-  document.querySelector(".timestamps").innerText = `${formatTime(elapsedTime)} / ${formatTime(songDuration)}`;
-
+  const songTitle = document.querySelector(".song-title");
+  const album = document.querySelector(".album");
+  const timestamps = document.querySelector(".timestamps");
   const albumArt = document.querySelector(".album-art");
+
+  songTitle.innerHTML = `<strong>${spotify.song}</strong> - ${spotify.artist}`;
+  album.innerHTML = `<em>${spotify.album}</em>`;
+  timestamps.innerText = `${formatTime(elapsedTime)} / ${formatTime(songDuration)}`;
+
   if (albumArt && albumArt.src !== spotify.album_art_url) {
     albumArt.src = spotify.album_art_url;
   }
 
-  if (shouldRestartMarquee) {
-    restartMarquee(document.querySelector(".song-title"));
-    restartMarquee(document.querySelector(".album"));
+  if (shouldRestartMarquee && !songTitle.style.animation) {
+    restartMarquee(songTitle);
+    restartMarquee(album);
   }
 
   if (musicDiv.dataset.interval) {
@@ -74,12 +82,14 @@ function restoreMusicSection(spotify, shouldRestartMarquee) {
     if (Date.now() >= songEnd) {
       clearInterval(interval);
     }
-  }, 1000);
+  }, 500);
 
   musicDiv.dataset.interval = interval;
 }
 
 function restartMarquee(element) {
+  if (element.style.animation !== "none") return;
+
   element.style.animation = "none";
   setTimeout(() => {
     element.style.animation = "marquee 8s linear infinite";
@@ -114,7 +124,6 @@ function isSameSpotify(newSpotify, savedSpotify) {
          newSpotify.timestamps.end === savedSpotify.timestamps.end;
 }
 
-
 async function fetchDiscordStatus() {
     try {
         const response = await fetch(`https://api.lanyard.rest/v1/users/${discordUserId}`);
@@ -124,10 +133,8 @@ async function fetchDiscordStatus() {
 
 
         if (spotifyActivity) {
-          console.log("I am listening to music!");
           updateMusicSection(data.data.spotify);
         } else {
-          console.log("I am not listening to music!");
           updateMusicSection(null);
         }
 
@@ -293,7 +300,7 @@ setInterval(updateAge, 50);
 
 updateAge();
 
-setInterval(fetchDiscordStatus, 3000);
+setInterval(fetchDiscordStatus, 5000);
 
 fetchDiscordStatus();
 
