@@ -229,6 +229,10 @@ h2 a:hover {
     animation: marquee 8s linear infinite;
 }
 
+.marquee:hover span {
+    animation-play-state: paused;
+}
+
 @keyframes marquee {
     from {
         transform: translateX(0%);
