@@ -49,6 +49,7 @@ body {
 
 .nav-links li a:hover {
   text-decoration: underline;
+  color: #cccccc;
 }
 
 .navbar-underline {
