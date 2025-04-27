@@ -1,5 +1,6 @@
 const messagesData = [
     { name: "Sneethan", message: "Heres my <a target='_blank' href='https://sneethan.xyz'>website</a>! ", image: "../assets/images/Sneethan_avatar.png" },
+    { name: "Cattn", message: "Heres my <a target='_blank' href='https://cattn.dev/'>website</a>! ", image: "../assets/images/Cattn_avatar.png" },
 ];
 
 function displayMessages() {
