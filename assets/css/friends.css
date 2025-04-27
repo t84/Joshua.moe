@@ -33,7 +33,6 @@ body {
   text-align: center;
 }
 
-
 .navbar {
   display: flex;
   justify-content: center;
@@ -44,6 +43,8 @@ body {
   left: 0;
   width: 100%;
   z-index: 1000;
+  background-color: black;
+  border-bottom: 1px solid #eee; 
 }
   
 .nav-links {
@@ -193,26 +194,12 @@ h1 {
     margin-bottom: 15px;
 }
 
-.links {
-    margin-top: 10px;
-}
-
-.links a {
+a {
     color: #ffffff;
     text-decoration: none;
 }
 
-.links a:hover {
-    color: #14be3e;
-    text-decoration: underline;
-}
-
-h2 a {
+a:hover {
     color: #cccccc;
-    text-decoration: none;
-}
-
-h2 a:hover {
-    color: #14be3e;
     text-decoration: underline;
 }

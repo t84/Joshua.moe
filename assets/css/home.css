@@ -31,6 +31,8 @@ body {
   left: 0;
   width: 100%;
   z-index: 1000;
+  background-color: black;
+  border-bottom: 1px solid #eee; 
 }
 
 .nav-links {
@@ -77,10 +79,6 @@ body {
     display: block;
     align-items: initial;
     justify-content: initial;
-  }
-
-  .navbar-underline {
-    display: block;
   }
 
   ::-webkit-scrollbar {
@@ -211,16 +209,12 @@ h1 {
   margin-bottom: 15px;
 }
 
-.links {
-  margin-top: 10px;
-}
-
-.links a {
+a {
   color: #ffffff;
   text-decoration: none;
 }
 
-.links a:hover {
+a:hover {
   color: #cccccc;
   text-decoration: underline;
 }
@@ -229,26 +223,6 @@ h1 {
   margin-left: 0;
   list-style: none;
   padding: 0;
-}
-
-h2 a {
-  color: #cccccc;
-  text-decoration: none;
-}
-
-h2 a:hover {
-  color: #14be3e;
-  text-decoration: underline;
-}
-
-.work-list li a {
-  color: #cccccc;
-  text-decoration: none;
-}
-
-.work-list li a:hover {
-  color: #cccccc;
-  text-decoration: underline;
 }
 
 .work-list li .date {

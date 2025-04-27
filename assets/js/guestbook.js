@@ -45,14 +45,30 @@ function displayMessages() {
         messagesContainer.appendChild(messageElement);
     });
 }
-function convertTimestampToUserTime(timestamp) {
-    const originalDate = new Date(timestamp);
 
-    if (isNaN(originalDate.getTime())) {
+function convertTimestampToUserTime(timestamp) {
+    const cleanedTimestamp = timestamp.replace(/ [A-Z]{2,4}$/, '');
+    
+    const date = new Date(cleanedTimestamp + ' UTC');
+
+    if (isNaN(date.getTime())) {
         return "Invalid Date";
     }
-    const userTime = originalDate.toLocaleString();
-    return userTime;
+
+    const options = {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+        timeZoneName: "short"
+    };
+
+    const formattedDate = date.toLocaleString(undefined, options);
+
+    return formattedDate;
 }
 
 displayMessages();
